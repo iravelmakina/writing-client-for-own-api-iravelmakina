@@ -4,7 +4,7 @@ using Polly;
 
 namespace Waste2MealsClient.Api.Http;
 
-public class ResilientHttpExecutor
+public class ResilientHttpExecutor : IResilientHttpExecutor
 {
     private readonly HttpClient _httpClient;
     private readonly IAsyncPolicy<HttpResponseMessage> _resiliencePolicy;
