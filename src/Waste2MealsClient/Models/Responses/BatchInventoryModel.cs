@@ -1,10 +1,9 @@
 namespace Waste2MealsClient.Models.Responses;
 
-public class BatchInventory
-{
-    public int Id { get; set; }
-    public int BatchDefinitionId { get; set; }
-    public int AvailableQuantity { get; set; }
-    public required string Status { get; set; }
-    public DateTime ExpiryDate { get; set; }
-}
+public record BatchInventoryModel(
+    int Id,
+    int BatchDefinitionId,
+    int AvailableQuantity,
+    string Status,
+    DateTime ExpiryDate
+);

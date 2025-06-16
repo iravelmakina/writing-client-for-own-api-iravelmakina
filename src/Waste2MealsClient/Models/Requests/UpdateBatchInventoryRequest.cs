@@ -1,10 +1,9 @@
-namespace Waste2MealsClient.Models;
+namespace Waste2MealsClient.Models.Requests;
 
-public class UpdateBatchInventoryRequest
-{
-    public int Id { get; set; }
-    public int BatchDefinitionId { get; set; }
-    public int AvailableQuantity { get; set; }
-    public string? Status { get; set; }
-    public DateTime ExpiryDate { get; set; }
-}
+public record UpdateBatchInventoryRequest(
+    int Id,
+    int BatchDefinitionId,
+    int AvailableQuantity,
+    string Status,
+    DateTime ExpiryDate
+);
