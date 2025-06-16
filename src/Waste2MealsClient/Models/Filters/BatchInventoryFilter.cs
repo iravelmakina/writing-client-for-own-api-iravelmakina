@@ -6,6 +6,6 @@ public record BatchInventoryFilter(
     int? MaxQuantity = null,
     DateTime? ExpireAfter = null,
     DateTime? ExpireBefore = null,
-    int PageNumber = 1,
-    int PageSize = 10
+    int? PageNumber = 1,
+    int? PageSize = 10
 );

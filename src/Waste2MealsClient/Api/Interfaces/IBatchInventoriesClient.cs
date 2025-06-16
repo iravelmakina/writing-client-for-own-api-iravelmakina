@@ -4,7 +4,7 @@ using Waste2MealsClient.Models.Responses;
 
 namespace Waste2MealsClient.Api.Interfaces;
 
-public interface IBatchInventoriesApi
+public interface IBatchInventoriesClient
 {
     Task<IEnumerable<BatchInventoryModel>> GetBatchInventoriesAsync(BatchInventoryFilter filter);
     Task<BatchInventoryModel> GetBatchInventoryByIdAsync(int id);

@@ -4,7 +4,7 @@ using Waste2MealsClient.Models.Responses;
 
 namespace Waste2MealsClient.Api.Interfaces;
 
-public interface IBatchDefinitionsApi
+public interface IBatchDefinitionsClient
 {
     Task<IEnumerable<BatchDefinitionModel>> GetBatchDefinitionsAsync(BatchDefinitionFilter filter);
     Task<BatchDefinitionModel> GetBatchDefinitionByIdAsync(int id);

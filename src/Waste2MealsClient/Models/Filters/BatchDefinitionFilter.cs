@@ -7,6 +7,6 @@ public record BatchDefinitionFilter(
     decimal? MaxPrice = null,
     TimeOnly? PickupAfter = null,
     TimeOnly? PickupBefore = null,
-    int PageNumber = 1,
-    int PageSize = 10
+    int? PageNumber = 1,
+    int? PageSize = 10
 );
