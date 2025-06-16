@@ -16,20 +16,23 @@ public class BatchDefinitionsClient : IBatchDefinitionsClient
         _httpExecutor = new ResilientHttpExecutor(httpClient);
     }
 
-    public async Task<IEnumerable<BatchDefinitionModel>> GetBatchDefinitionsAsync(int? pageSize = null, int? pageNumber = null, int? vendorId = null,
+    public async Task<List<BatchDefinitionModel>> GetBatchDefinitionsAsync(int? pageSize = null, int? pageNumber = null, Guid? vendorId = null,
         string? tag = null, decimal? minPrice = null, decimal? maxPrice = null, TimeOnly? pickupAfter = null, TimeOnly? pickupBefore = null)
     {
         var filter = new BatchDefinitionFilter
         {
             PageSize = pageSize,
             PageNumber = pageNumber,
+            VendorId = vendorId,
             Tag = tag,
             MinPrice = minPrice,
-            MaxPrice = maxPrice
+            MaxPrice = maxPrice,
+            PickupAfter = pickupAfter,
+            PickupBefore = pickupBefore
         };
         
         var queryString = BuildQueryString(filter);
-        return await _httpExecutor.ExecuteWithPolicyAsync<IEnumerable<BatchDefinitionModel>>(
+        return await _httpExecutor.ExecuteWithPolicyAsync<List<BatchDefinitionModel>>(
             client => client.GetAsync($"batch_definitions{queryString}")
         );
     }
@@ -70,7 +73,7 @@ public class BatchDefinitionsClient : IBatchDefinitionsClient
         );
     }
 
-    private string BuildQueryString(BatchDefinitionFilter filter)
+    public string BuildQueryString(BatchDefinitionFilter filter)
     {
         var queryParams = new List<string>();
 
@@ -87,10 +90,10 @@ public class BatchDefinitionsClient : IBatchDefinitionsClient
             queryParams.Add($"maxPrice={filter.MaxPrice}");
         
         if (filter.PickupAfter.HasValue)
-            queryParams.Add($"pickupAfter={filter.PickupAfter.Value.ToString("hh\\:mm\\:ss")}");
+            queryParams.Add($"pickupAfter={filter.PickupAfter.Value.ToString("HH\\:mm\\:ss")}");
 
         if (filter.PickupBefore.HasValue)
-            queryParams.Add($"pickupBefore={filter.PickupBefore.Value.ToString("hh\\:mm\\:ss")}");
+            queryParams.Add($"pickupBefore={filter.PickupBefore.Value.ToString("HH\\:mm\\:ss")}");
 
         if (filter.PageNumber.HasValue)
             queryParams.Add($"pageNumber={filter.PageNumber}");

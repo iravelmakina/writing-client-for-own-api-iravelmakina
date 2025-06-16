@@ -17,7 +17,7 @@ public class BatchInventoriesClient : IBatchInventoriesClient
         _httpExecutor = new ResilientHttpExecutor(httpClient);
     }
 
-    public async Task<IEnumerable<BatchInventoryModel>> GetBatchInventoriesAsync(int? pageSize = null, int? pageNumber = null, string? status = null, int? minQuantity = null, int? maxQuantity = null, DateTime? expireAfter = null, DateTime? expireBefore = null)
+    public async Task<List<BatchInventoryModel>> GetBatchInventoriesAsync(int? pageSize = null, int? pageNumber = null, string? status = null, int? minQuantity = null, int? maxQuantity = null, DateTime? expireAfter = null, DateTime? expireBefore = null)
     {
         var filter = new BatchInventoryFilter
         {
@@ -31,7 +31,7 @@ public class BatchInventoriesClient : IBatchInventoriesClient
         };
         
         var queryString = BuildQueryString(filter);
-        return await _httpExecutor.ExecuteWithPolicyAsync<IEnumerable<BatchInventoryModel>>(
+        return await _httpExecutor.ExecuteWithPolicyAsync<List<BatchInventoryModel>>(
             client => client.GetAsync($"batch_inventories{queryString}")
         );
     }
@@ -72,11 +72,11 @@ public class BatchInventoriesClient : IBatchInventoriesClient
         );
     }
     
-    private string BuildQueryString(BatchInventoryFilter? filter)
+    public string BuildQueryString(BatchInventoryFilter? filter)
     {
         var queryParams = new List<string>();
 
-        if (!string.IsNullOrEmpty(filter.Status))
+        if (!string.IsNullOrEmpty(filter!.Status))
             queryParams.Add($"status={WebUtility.UrlEncode(filter.Status)}");
 
         if (filter.MinQuantity.HasValue)

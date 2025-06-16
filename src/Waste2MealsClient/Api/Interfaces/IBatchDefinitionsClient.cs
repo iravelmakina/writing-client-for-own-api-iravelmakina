@@ -6,7 +6,7 @@ namespace Waste2MealsClient.Api.Interfaces;
 
 public interface IBatchDefinitionsClient
 {
-    Task<IEnumerable<BatchDefinitionModel>> GetBatchDefinitionsAsync(int? pageSize = null, int? pageNumber = null, int? vendorId = null,
+    Task<List<BatchDefinitionModel>> GetBatchDefinitionsAsync(int? pageSize = null, int? pageNumber = null, Guid? vendorId = null,
         string? tag = null, decimal? minPrice = null, decimal? maxPrice = null, TimeOnly? pickupAfter = null, TimeOnly? pickupBefore = null);
     Task<BatchDefinitionModel> GetBatchDefinitionByIdAsync(int id);
     Task<BatchDefinitionModel> CreateBatchDefinitionAsync(CreateBatchDefinitionRequest request);
