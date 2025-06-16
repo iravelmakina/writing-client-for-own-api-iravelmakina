@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waste2MealsClient", "src\Waste2MealsClient\Waste2MealsClient.csproj", "{8ABEB5B6-BA8F-4ABB-9E39-CD6AB13DA891}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waste2MealsClient.Tests", "tests\Waste2MealsClient.Tests\Waste2MealsClient.Tests.csproj", "{B7F310FB-A2A5-48A2-AE01-6514FD465EAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8ABEB5B6-BA8F-4ABB-9E39-CD6AB13DA891}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ABEB5B6-BA8F-4ABB-9E39-CD6AB13DA891}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ABEB5B6-BA8F-4ABB-9E39-CD6AB13DA891}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ABEB5B6-BA8F-4ABB-9E39-CD6AB13DA891}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7F310FB-A2A5-48A2-AE01-6514FD465EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7F310FB-A2A5-48A2-AE01-6514FD465EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7F310FB-A2A5-48A2-AE01-6514FD465EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7F310FB-A2A5-48A2-AE01-6514FD465EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
