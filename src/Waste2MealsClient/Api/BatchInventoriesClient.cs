@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
+using Waste2MealsClient.Api.Http;
 using Waste2MealsClient.Api.Interfaces;
 using Waste2MealsClient.Models.Filters;
 using Waste2MealsClient.Models.Requests;
@@ -11,76 +10,70 @@ namespace Waste2MealsClient.Api;
 
 public class BatchInventoriesClient : IBatchInventoriesClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly ResilientHttpExecutor _httpExecutor;
 
     public BatchInventoriesClient(HttpClient httpClient)
     {
-        _httpClient = httpClient;
-        _serializerOptions = new JsonSerializerOptions
-            
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        _httpExecutor = new ResilientHttpExecutor(httpClient);
     }
 
-    public async Task<IEnumerable<BatchInventoryModel>> GetBatchInventoriesAsync(
-        BatchInventoryFilter? filter = null)
+    public async Task<IEnumerable<BatchInventoryModel>> GetBatchInventoriesAsync(int? pageSize = null, int? pageNumber = null, string? status = null, int? minQuantity = null, int? maxQuantity = null, DateTime? expireAfter = null, DateTime? expireBefore = null)
     {
+        var filter = new BatchInventoryFilter
+        {
+            PageSize = pageSize,
+            PageNumber = pageNumber,
+            Status = status,
+            MinQuantity = minQuantity,
+            MaxQuantity = maxQuantity,
+            ExpireAfter = expireAfter,
+            ExpireBefore = expireBefore
+        };
+        
         var queryString = BuildQueryString(filter);
-        var response = await _httpClient.GetAsync($"batch_inventories{queryString}");
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<IEnumerable<BatchInventoryModel>>(_serializerOptions)
-               ?? throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<IEnumerable<BatchInventoryModel>>(
+            client => client.GetAsync($"batch_inventories{queryString}")
+        );
     }
 
     public async Task<BatchInventoryModel> GetBatchInventoryByIdAsync(int id)
     {
-        var response = await _httpClient.GetAsync($"batch_inventories/{id}");
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchInventoryModel>(_serializerOptions) ??
-               throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchInventoryModel>(
+            client => client.GetAsync($"batch_inventories/{id}")
+        );
     }
 
-    public async Task<BatchInventoryModel> CreateBatchInventoryAsync(
-        CreateBatchInventoryRequest request)
+    public async Task<BatchInventoryModel> CreateBatchInventoryAsync(CreateBatchInventoryRequest request)
     {
-        var content = new StringContent(
-            JsonSerializer.Serialize(request, _serializerOptions),
-            Encoding.UTF8,
-            "application/json");
-
-        var response = await _httpClient.PostAsync("batch_inventories", content);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchInventoryModel>(_serializerOptions) ??
-               throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchInventoryModel>(
+            async client =>
+            {
+                var response = await client.PostAsJsonAsync("batch_inventories", request);
+                return response;
+            }
+        );
     }
 
-    public async Task<BatchInventoryModel> UpdateBatchInventoryAsync(
-        UpdateBatchInventoryRequest request)
+    public async Task<BatchInventoryModel> UpdateBatchInventoryAsync(UpdateBatchInventoryRequest request)
     {
-        var content = new StringContent(
-            JsonSerializer.Serialize(request, _serializerOptions),
-            Encoding.UTF8,
-            "application/json");
-
-        var response = await _httpClient.PutAsync("batch_inventories", content);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchInventoryModel>(_serializerOptions) ??
-               throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchInventoryModel>(
+            async client =>
+            {
+                var response = await client.PutAsJsonAsync("batch_inventories", request);
+                return response;
+            }
+        );
     }
 
     public async Task DeleteBatchInventoryAsync(int id)
     {
-        var response = await _httpClient.DeleteAsync($"batch_inventories/{id}");
-        response.EnsureSuccessStatusCode();
+        await _httpExecutor.ExecuteWithPolicyAsync(
+            client => client.DeleteAsync($"batch_inventories/{id}")
+        );
     }
-
+    
     private string BuildQueryString(BatchInventoryFilter? filter)
     {
-        if (filter == null) return string.Empty;
-
         var queryParams = new List<string>();
 
         if (!string.IsNullOrEmpty(filter.Status))

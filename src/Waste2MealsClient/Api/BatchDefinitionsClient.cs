@@ -1,79 +1,73 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
+using Waste2MealsClient.Api.Http;
 using Waste2MealsClient.Api.Interfaces;
 using Waste2MealsClient.Models.Filters;
 using Waste2MealsClient.Models.Requests;
 using Waste2MealsClient.Models.Responses;
-
 namespace Waste2MealsClient.Api;
 
 public class BatchDefinitionsClient : IBatchDefinitionsClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly ResilientHttpExecutor _httpExecutor;
 
     public BatchDefinitionsClient(HttpClient httpClient)
     {
-        _httpClient = httpClient;
-        _serializerOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        _httpExecutor = new ResilientHttpExecutor(httpClient);
     }
 
-    public async Task<IEnumerable<BatchDefinitionModel>> GetBatchDefinitionsAsync(
-        BatchDefinitionFilter filter)
+    public async Task<IEnumerable<BatchDefinitionModel>> GetBatchDefinitionsAsync(int? pageSize = null, int? pageNumber = null, int? vendorId = null,
+        string? tag = null, decimal? minPrice = null, decimal? maxPrice = null, TimeOnly? pickupAfter = null, TimeOnly? pickupBefore = null)
     {
+        var filter = new BatchDefinitionFilter
+        {
+            PageSize = pageSize,
+            PageNumber = pageNumber,
+            Tag = tag,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice
+        };
+        
         var queryString = BuildQueryString(filter);
-        var response = await _httpClient.GetAsync($"batch_definitions{queryString}");
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<IEnumerable<BatchDefinitionModel>>(_serializerOptions)
-               ?? throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<IEnumerable<BatchDefinitionModel>>(
+            client => client.GetAsync($"batch_definitions{queryString}")
+        );
     }
 
     public async Task<BatchDefinitionModel> GetBatchDefinitionByIdAsync(int id)
     {
-        var response = await _httpClient.GetAsync($"batch_definitions/{id}");
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchDefinitionModel>(_serializerOptions)
-               ?? throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchDefinitionModel>(
+            client => client.GetAsync($"batch_definitions/{id}")
+        );
     }
 
-    public async Task<BatchDefinitionModel> CreateBatchDefinitionAsync(
-        CreateBatchDefinitionRequest request)
+    public async Task<BatchDefinitionModel> CreateBatchDefinitionAsync(CreateBatchDefinitionRequest request)
     {
-        var content = new StringContent(
-            JsonSerializer.Serialize(request, _serializerOptions),
-            Encoding.UTF8,
-            "application/json");
-
-        var response = await _httpClient.PostAsync("batch_definitions", content);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchDefinitionModel>(_serializerOptions)
-               ?? throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchDefinitionModel>(
+            async client =>
+            {
+                var response = await client.PostAsJsonAsync("batch_definitions", request);
+                return response;
+            }
+        );
     }
 
-    public async Task<BatchDefinitionModel> UpdateBatchDefinitionAsync(
-        UpdateBatchDefinitionRequest request)
+    public async Task<BatchDefinitionModel> UpdateBatchDefinitionAsync(UpdateBatchDefinitionRequest request)
     {
-        var content = new StringContent(
-            JsonSerializer.Serialize(request, _serializerOptions),
-            Encoding.UTF8,
-            "application/json");
-
-        var response = await _httpClient.PutAsync("batch_definitions", content);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<BatchDefinitionModel>(_serializerOptions)
-               ?? throw new InvalidOperationException("Failed to deserialize response content.");
+        return await _httpExecutor.ExecuteWithPolicyAsync<BatchDefinitionModel>(
+            async client =>
+            {
+                var response = await client.PutAsJsonAsync("batch_definitions", request);
+                return response;
+            }
+        );
     }
 
     public async Task DeleteBatchDefinitionAsync(int id)
     {
-        var response = await _httpClient.DeleteAsync($"batch_definitions/{id}");
-        response.EnsureSuccessStatusCode();
+        await _httpExecutor.ExecuteWithPolicyAsync(
+            client => client.DeleteAsync($"batch_definitions/{id}")
+        );
     }
 
     private string BuildQueryString(BatchDefinitionFilter filter)
