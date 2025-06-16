@@ -6,8 +6,8 @@ public record BatchDefinitionModel(
     string Description,
     string Tag,
     string ImageUrl,
-    double OriginalPrice,
-    double DiscountPrice,
+    decimal OriginalPrice,
+    decimal DiscountPrice,
     TimeSpan PickupStartTime,
     TimeSpan PickupEndTime
 );
